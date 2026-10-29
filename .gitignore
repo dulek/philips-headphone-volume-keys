@@ -1,0 +1,14 @@
+.gradle/
+.idea/
+.vscode/
+.DS_Store
+local.properties
+**/build/
+*.apk
+*.aab
+*.jks
+*.keystore
+*.pem
+*.key
+shots/
+backup/
