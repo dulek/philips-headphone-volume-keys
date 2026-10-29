@@ -21,9 +21,11 @@ currently recognizes the Polish and English headphone-volume labels.
 
 ## Build and install
 
-You need JDK 17, Android SDK platform 34 and build-tools 34.0.0, GNU Make, and ADB. Set
-`ANDROID_HOME` to your Android SDK directory (or create a `local.properties` file with
-`sdk.dir=...`). The included Gradle wrapper downloads Gradle 8.9 on first use.
+You need GNU Make and ADB. For a local build, also install JDK 17, Android SDK platform 34
+and build-tools 34.0.0. Set `ANDROID_HOME` to your Android SDK directory (or create a
+`local.properties` file with `sdk.dir=...`). The included Gradle wrapper downloads Gradle
+8.9 on first use. Docker can supply the build tools instead; its first build downloads the
+Android SDK and takes longer.
 
 On the TV, enable ADB debugging in Developer options and accept the **Allow USB debugging?**
 prompt when connecting. For network ADB on port 5555, run:
@@ -35,9 +37,16 @@ make enable ADB_SERIAL=192.168.1.50:5555
 make status ADB_SERIAL=192.168.1.50:5555
 ```
 
+If you have Docker instead of a local JDK and Android SDK, replace `make install` with
+`make install-docker` in the example. The remaining commands are the same.
+Docker keeps its debug signing key in the `philips-headphone-gradle` volume. Keep that
+volume if you want later builds to update an already installed APK; a different key cannot
+replace it in place.
+
 Replace the example address with your TV's address. If you connect by USB or Android's
 Wireless debugging instead, use the serial shown by `adb devices` for `ADB_SERIAL`; Wireless
-debugging uses a port assigned by the TV. `make build` only builds the APK, at
+debugging uses a port assigned by the TV. `make build` or `make build-docker` only builds
+the APK, at
 `app/build/outputs/apk/debug/app-debug.apk`.
 
 `make install` installs the app but does not enable its accessibility service. `make enable`
@@ -75,3 +84,5 @@ not store or guess it. Hold timing and the supported headphone row labels are in
 ## License
 
 Copyright 2026 Michał Dulko. Licensed under the [Apache License 2.0](LICENSE).
+The optional Docker build setup includes an MIT attribution in
+[THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
