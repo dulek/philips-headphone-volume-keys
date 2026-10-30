@@ -1,7 +1,13 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingLeanbackLauncher">
     <uses-feature android:name="android.software.leanback" android:required="true" />
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
-    <application android:allowBackup="false" android:label="Philips headphone keys" android:usesCleartextTraffic="false">
+    <!-- This is an accessibility service, so it has no TV launcher activity. -->
+    <application android:allowBackup="false" android:fullBackupContent="@xml/backup_rules"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:icon="@drawable/ic_headphones" android:label="Philips headphone keys"
+        android:usesCleartextTraffic="false">
         <service android:name=".HeadphoneKeyService" android:label="Philips headphone volume keys"
             android:exported="true" android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
             <intent-filter><action android:name="android.accessibilityservice.AccessibilityService" /></intent-filter>

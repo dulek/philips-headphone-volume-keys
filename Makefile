@@ -5,17 +5,20 @@ ADB ?= adb
 DOCKER ?= docker
 IMAGE ?= philips-headphone-android-build
 GRADLE_VOLUME ?= philips-headphone-gradle
+SIGNING_DIR ?= $(HOME)/.local/share/philips-headphone-volume-keys/signing
 TV_PORT ?= 5555
 ADB_SERIAL ?=
 TV_HOST ?=
 APK := app/build/outputs/apk/debug/app-debug.apk
 
-.PHONY: help build build-docker connect check-device install install-docker install-built enable disable status
+.PHONY: help build build-docker release-key release-docker connect check-device install install-docker install-built enable disable status
 
 help:
 	@printf '%s\n' \
 	  'make build                         Build the debug APK (JDK 17 and Android SDK 34 required)' \
 	  'make build-docker                  Build with Docker, without a local Android SDK' \
+	  'make release-key                   Create a private release signing key once' \
+	  'make release-docker                Build, sign, and verify an APK for publishing' \
 	  'make connect TV_HOST=<tv-ip>       Connect to network ADB on port 5555' \
 	  'make install ADB_SERIAL=<serial>   Build and install the APK' \
 	  'make install-docker ADB_SERIAL=<serial>  Build in Docker and install' \
@@ -30,6 +33,12 @@ build:
 build-docker:
 	@$(DOCKER) image inspect "$(IMAGE)" >/dev/null 2>&1 || $(DOCKER) build -t "$(IMAGE)" docker
 	$(DOCKER) run --rm --user "$(shell id -u):$(shell id -g)" -v "$(CURDIR):/workspace" -v "$(GRADLE_VOLUME):/gradle" -w /workspace -e ANDROID_USER_HOME=/gradle/.android "$(IMAGE)" sh ./gradlew --no-daemon --console=plain assembleDebug
+
+release-key:
+	SIGNING_DIR="$(SIGNING_DIR)" scripts/create-release-key.sh
+
+release-docker:
+	SIGNING_DIR="$(SIGNING_DIR)" IMAGE="$(IMAGE)" GRADLE_VOLUME="$(GRADLE_VOLUME)" DOCKER="$(DOCKER)" scripts/make-release.sh
 
 connect:
 	@test -n "$(TV_HOST)" || { echo 'Set TV_HOST to the TV IP address.' >&2; exit 1; }

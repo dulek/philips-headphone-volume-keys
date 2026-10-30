@@ -62,6 +62,25 @@ If installation returns `INSTALL_FAILED_VERIFICATION_FAILURE`, the TV blocks sid
 do not keep retrying. If it returns `INSTALL_FAILED_OLDER_SDK`, the TV is below Android 8.0.
 The app has not been tested on those devices.
 
+## Build a public release APK
+
+Run these once on the computer that will sign releases:
+
+```sh
+make release-key
+make release-docker
+```
+
+`make release-key` creates a private keystore and two strong password files in
+`~/.local/share/philips-headphone-volume-keys/signing/`. Back up **all three files** securely.
+Keep them out of Git and out of release assets; future versions must use the same key to
+install as updates. `make release-docker` builds, aligns, signs, and verifies the APK. Upload
+`dist/philips-headphone-volume-keys-1.0.0.apk` as the release asset. The adjacent `.sha256`
+file is its checksum and can be uploaded too. Neither file is committed to Git.
+
+The public release is signed with a different key from a local debug build, so it cannot
+update that debug build in place. New users installing the release APK are unaffected.
+
 ## Turn it off
 
 ```sh
